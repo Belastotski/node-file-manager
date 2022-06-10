@@ -26,12 +26,13 @@ rl.on('line', async (line) => {
     .then(console.log)
     .catch(err => { 
         console.error(err.message)
+        getPrompt();
     })
     getPrompt();
 
-}).on('close', (input) => output.write(`\nThank you for using File Manager, ${global.userName}!\n`))
+});
 
-process.on('SIGINT',() => { 
-    rl.close();
-  } ) ;
+process.on('exit',  () => output.write(`\nThank you for using File Manager, ${global.userName}!\n`)) ;
+
+//   process.stderr.on('error', (err) => console.log(err.code));
 

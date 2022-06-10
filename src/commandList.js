@@ -5,7 +5,7 @@ import { InputError, OperationError } from "./errors.js"
 
 
 export function commands(command) {
-    // return commandList.hasOwnProperty(command);
+    if(command === '.exit') process.exit(0);
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = dirname(__filename);
     const dir = join(__dirname,'utils');
