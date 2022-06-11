@@ -8,7 +8,7 @@ export default function controller(command, ...args){
             let cp = fork(path,[global.workDir,...args], {silent:false});
             cp.once('message', ({err,data,dir}) => {
                 console.log('message: ',err,data,dir);
-                if (err) reject(err == 'input'? new InputError: new OperationError);
+                if (err) reject(err);
                 else { 
                     if (dir) global.workDir = dir;
                     resolve(data, cp);
