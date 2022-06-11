@@ -6,12 +6,12 @@ export default function controller(command, ...args){
     return new Promise((resolve, reject) => {
         commands(command).then(async path => {
             let cp = fork(path,[global.workDir,...args], {silent:false});
-            cp.once('message', message => {
-                console.log(message);
-                if (message.error) reject(message.error == 'input'? new InputError: new OperationError);
-                else {
-                global.workDir = message.dir;
-                resolve(message.data);
+            cp.once('message', ({err,data,dir}) => {
+                console.log('message: ',err,data,dir);
+                if (err) reject(err == 'input'? new InputError: new OperationError);
+                else { 
+                    if (dir) global.workDir = dir;
+                    resolve(data, cp);
                 }
             });
         }).catch(reject);

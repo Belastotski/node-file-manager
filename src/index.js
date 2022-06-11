@@ -23,7 +23,9 @@ getPrompt();
 
 rl.on('line', async (line) => {
     await controller(...line.split(' '))
-    .then(console.log)
+    .then( (stream, cp) => {
+        if (stream) stream.pipe(output);
+    })
     .catch(err => { 
         console.error(err.message)
         getPrompt();
