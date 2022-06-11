@@ -1,7 +1,6 @@
-import {join, parse } from "path";
-// import {InputError, OperationError} from '../errors.js';
-// import { fileURLToPath } from 'url';
-
+import { dirname, join,resolve as pResolve, parse } from "path";
+import {InputError, OperationError} from '../errors.js';
+import { fileURLToPath } from 'url';
 
 let dir = process.argv[2];
 try {
@@ -11,4 +10,3 @@ try {
 catch (err) {
     process.send({err});
 }
-
