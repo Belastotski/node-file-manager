@@ -23,7 +23,7 @@ getPrompt(homedir());
 
 try {
 rl.on('line', (line) => {
-    controller(...line.split(' ')).then(( path => {
+    controller(...line.split(' ').filter(el => el !== '')).then(( path => {
         console.log();
         getPrompt(path || global.workDir)
     } ));
