@@ -1,4 +1,5 @@
 import {join, parse } from "path";
+import { stderr } from "process";
 // import {InputError, OperationError} from '../errors.js';
 // import { fileURLToPath } from 'url';
 
@@ -6,9 +7,9 @@ import {join, parse } from "path";
 let dir = process.argv[2];
 try {
     if (parse(dir).root !== dir)  dir = join(dir, '..');
-    process.send({ undefined , undefined , dir});
+    process.send({dir});
 }
 catch (err) {
-    process.send({err});
+    stderr.write(err.name);
 }
 

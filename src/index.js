@@ -11,29 +11,29 @@ if (!userArg) {
 global.userName = userArg.slice(11);
 
 output.write(`Welcome to the File Manager, ${global.userName}!\n`)
-global.workDir = homedir();
 
 let rl = readline.createInterface({input,output});
-const getPrompt = () => {
+const getPrompt = (dir) => {
+    global.workDir = dir;
     rl.setPrompt('FM: ' + global.workDir + '> ');
     rl.prompt();
 };
 
-getPrompt();
+getPrompt(homedir());
 
-rl.on('line', async (line) => {
-    await controller(...line.split(' '))
-    .then( (stream, cp) => {
-        if (stream) stream.pipe(output);
-    })
-    .catch(err => { 
-        console.error(err.message)
-        getPrompt();
-    })
-    getPrompt();
+try {
+rl.on('line', (line) => {
+    controller(...line.split(' ')).then(( path => {
+        console.log();
+        getPrompt(path || global.workDir)
+    } ));
+    });
+} catch (err) {
+    console.log(err.message);
+}
 
-});
 
+// process.stderr.on('data' , err => console.log('-----------------' + err));
 process.on('exit',  () => output.write(`\nThank you for using File Manager, ${global.userName}!\n`)) ;
 
 //   process.stderr.on('error', (err) => console.log(err.code));
