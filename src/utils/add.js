@@ -1,6 +1,5 @@
 import { join,parse } from "path";
-import { stat,open } from "fs/promises";
-import {createReadStream } from "fs";
+import { open } from "fs/promises";
 import { InputError, OperationError} from '../errors.js';
 
 let dir = process.argv[2];
