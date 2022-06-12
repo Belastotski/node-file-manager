@@ -23,18 +23,15 @@ getPrompt(homedir());
 
 try {
 rl.on('line', (line) => {
-    controller(...line.split(' ').filter(el => el !== '')).then(( path => {
-        console.log();
+    controller(...line.trim().split(' ').filter(el => el !== '')).then(( path => {
+        // console.log('');
         getPrompt(path || global.workDir)
     } ));
     });
 } catch (err) {
-    console.log(err.message);
+    process.stderr.write(err.message + ' - ');
 }
 
-
-// process.stderr.on('data' , err => console.log('-----------------' + err));
 process.on('exit',  () => output.write(`\nThank you for using File Manager, ${global.userName}!\n`)) ;
 
-//   process.stderr.on('error', (err) => console.log(err.code));
 

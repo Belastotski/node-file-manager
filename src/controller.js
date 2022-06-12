@@ -1,5 +1,4 @@
 import {commands} from '../src/commandList.js';
-// import {InputError, OperationError} from '../src/errors.js';
 import { Transform } from 'stream';
 import { fork } from 'node:child_process';
 
@@ -7,25 +6,47 @@ export default function controller(command, ...args)
 {
     return commands(command).then(path => {
         return new Promise((resolve, reject) => {
-            let cp = fork(path, [global.workDir,...args], {stdio: 'pipe'});
-            cp.once('message', ({dir}) => {
+            let cp = fork(path, [...args], {stdio: 'pipe'});
+            cp.on('message', ({dir, ask }) => {
+                    if (dir) {
                     cp.kill();
                     cp.stdout.destroy();
                     resolve(dir);
+                    } else if (ask) {
+                        cp.stdin.write(global[ask]); 
+                    }
                 });
 
                 const errorControl = new Transform({
                     transform(chunk, encoding, callback) {
+                        console.log('transform: ' + chunk);
                     const newChank = (chunk.toString().trim() == 'Invalid input'?  'Invalid input' : 'Operation failed')  + '\r\n';
                       callback(null, newChank);
+                    // callback(null, chunk);
                     },
                   });
 
             cp.stdout.pipe(process.stdout);
             cp.stderr.pipe(errorControl).pipe(process.stderr);
+            
+            
+            cp.stdout.on('end', e => {
+                cp.kill();
+            } )
 
-            cp.on('error', (err) => reject(err));
-            cp.on('close', () => resolve(global.workDir));  
+            cp.stdout.on('data', e => {
+                if (!cp.stdout.read()) cp.kill();
+            } );
+
+            cp.stderr.on('end', e => {
+                cp.kill();
+            } );
+            cp.on('close', () => {
+                console.log('close cp')
+                cp.stderr.destroy();
+                cp.stdout.destroy();
+                resolve(global.workDir)
+            });  
             });
-        }).catch(e => console.log((e.message)));
+        }).catch(e => console.log(e.message));
 }

@@ -2,13 +2,29 @@ import { resolve } from "path";
 import { stderr } from "process";
 import { stat } from "fs";
 import { InputError } from '../errors.js';
+import { getGlobalFromParent, checkArgs } from '../util.js';
 
-let dir = process.argv[2];
-let newDir = process.argv[3];
-try {
-    if (!newDir) throw new InputError();
-    dir = resolve(dir, newDir);
-    stat(dir, err => ( err? stderr.write(err.message) :  process.send({dir})));
-} catch (err) {
-    process.stderr.write(err.message);
-}
+
+    getGlobalFromParent(process, 'workDir')
+        .then( async dir =>  {
+            const newDir =  await checkArgs(process.argv[2]);
+            return [dir, ...newDir];
+        })
+        .then(dirs => {
+            let dir = resolve(...dirs);
+            stat(dir, err => {
+                if (err) { 
+                    stderr.write(err.message)
+                    process.exit(1); 
+                }
+                process.send({dir});
+                
+            });
+    }).catch(err => {
+        stderr.write(err.message)
+    })
+    
+
+    
+
+

@@ -1,16 +1,13 @@
 import { readdir } from "fs";
 import { stderr, stdout } from "process";
+import { getGlobalFromParent, checkArgs } from '../util.js';
 
-let dir = process.argv[2];
-let file = process.argv[3];
-
-try {
+getGlobalFromParent(process, 'workDir')
+.then( async dir => {
     readdir(dir, (err,files) => {
         if (err) stderr.write(err.name);
         files.forEach(file => stdout.write(file + '\n'));
     })
-    
-}
-catch (err) {
+}).catch (err => {
     stderr.write(err);
-}
+})
