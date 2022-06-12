@@ -12,9 +12,9 @@ import { getGlobalFromParent, checkArgs } from '../util.js';
         })
         .then(dirs => {
             let dir = resolve(...dirs);
-            stat(dir, err => {
-                if (err) { 
-                    stderr.write(err.message)
+            stat(dir, (err, stat) => {
+                if (err || stat.isFile()) { 
+                    stderr.write(err?.message || 'Invalid input')
                     process.exit(1); 
                 }
                 process.send({dir});
