@@ -1,4 +1,4 @@
-import { join } from "path";
+import { resolve } from "path";
 import zlib from "zlib";
 import { createReadStream, createWriteStream } from "fs";
 import { stat } from "fs/promises";
@@ -8,8 +8,8 @@ import { getGlobalFromParent, checkArgs } from '../util.js';
 getGlobalFromParent(process, 'workDir')
 .then( async dir =>  {
     const files =  await checkArgs(process.argv[2],process.argv[3]);
-    const oldFile = join(dir, files[0]);
-    const newFile = join(dir, files[1]);
+    const oldFile = resolve(dir, files[0]);
+    const newFile = resolve(dir, files[1]);
     let fl = await stat(oldFile).then();
     if (!fl.isFile()) throw new OperationError();
     return { oldFile, newFile, size : fl.size }
