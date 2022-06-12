@@ -8,7 +8,7 @@ let newDir = process.argv[3];
 try {
     if (!newDir) throw new InputError();
     dir = resolve(dir, newDir);
-    stat(dir, err => ( err? stderr.write(err.name) :  process.send({dir})));
+    stat(dir, err => ( err? stderr.write(err.message) :  process.send({dir})));
 } catch (err) {
-    process.stderr.write(err.name);
+    process.stderr.write(err.message);
 }

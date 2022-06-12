@@ -1,6 +1,7 @@
 import {commands} from '../src/commandList.js';
-import {InputError, OperationError} from '../src/errors.js';
-import { fork, spawn } from 'node:child_process';
+// import {InputError, OperationError} from '../src/errors.js';
+import { Transform } from 'stream';
+import { fork } from 'node:child_process';
 
 export default function controller(command, ...args)
 {
@@ -12,11 +13,19 @@ export default function controller(command, ...args)
                     cp.stdout.destroy();
                     resolve(dir);
                 });
+
+                const errorControl = new Transform({
+                    transform(chunk, encoding, callback) {
+                    const newChank = (chunk.toString().trim() == 'Invalid input'?  'Invalid input' : 'Operation failed')  + '\r\n';
+                      callback(null, newChank);
+                    },
+                  });
+
             cp.stdout.pipe(process.stdout);
-            cp.stderr.pipe(process.stderr);
+            cp.stderr.pipe(errorControl).pipe(process.stderr);
 
             cp.on('error', (err) => reject(err));
             cp.on('close', () => resolve(global.workDir));  
             });
-        }).catch(e => console.log('m1: ',e.message));
+        }).catch(e => console.log((e.message)));
 }
