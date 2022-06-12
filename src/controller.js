@@ -26,7 +26,7 @@ export default function controller(command, ...args)
 
                 const errorControl = new Transform({
                     transform(chunk, encoding, callback) {
-                        // console.log('transform: ' + chunk);
+                        console.log('transform: ' + chunk);
                     const newChank = (chunk.toString().trim() == 'Invalid input'?  'Invalid input' : 'Operation failed')  + '\r\n';
                       callback(null, newChank);
                     },
